@@ -19,7 +19,7 @@ SDL_Window* displayWindow;
 bool gameIsRunning = true;
 
 ShaderProgram program;
-glm::mat4 viewMatrix, modelMatrix, projectionMatrix, leftWhiteBarMatrix, rightWhiteBarMatrix, ballMatrix;
+glm::mat4 viewMatrix, modelMatrix, projectionMatrix, leftWhiteBarMatrix, rightWhiteBarMatrix, ballMatrix, middleBarMatrix;
 
 float lastTicks = 0.0f;
 const float leftWhiteBar_x = -4.9f;
@@ -74,6 +74,7 @@ void Initialize() {
 #endif
     
     glViewport(0, 0, 640, 480);
+//    glViewport(0, 0, 1280, 960);
     
     program.Load("shaders/vertex_textured.glsl", "shaders/fragment_textured.glsl");
     
@@ -185,6 +186,9 @@ void Update() {
     rightBar_position += rightBar_movement * bar_speed * deltaTime;
     leftBar_position += leftBar_movement * bar_speed * deltaTime;
     
+    middleBarMatrix = glm::mat4(1.0f);
+    middleBarMatrix = glm::translate(middleBarMatrix, glm::vec3(0.0f,0.0f,0.0f));
+    
     movement(rightBar_position, leftBar_position, deltaTime);
     ballMatrix = glm::mat4(1.0f);
     ballMatrix = glm::translate(ballMatrix, ball_position);
@@ -213,6 +217,21 @@ void Render() {
      
      glDisableVertexAttribArray(program.positionAttribute);
      glDisableVertexAttribArray(program.texCoordAttribute);
+    
+    float vertices2[] ={ -0.01, -3.8, 0.01, -3.8, 0.01, 3.8, -0.01, -3.8, 0.01, 3.8, -0.01, 3.8 };
+    float texCoords2[] = { 0.0, 1.0 , 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
+    
+    glVertexAttribPointer(program.positionAttribute, 2, GL_FLOAT, false, 0, vertices2);
+    glEnableVertexAttribArray(program.positionAttribute);
+    glVertexAttribPointer(program.texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords2);
+    glEnableVertexAttribArray(program.texCoordAttribute);
+    
+    program.SetModelMatrix(middleBarMatrix);
+    glBindTexture(GL_TEXTURE_2D, whiteBarTextureID);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    
+    glDisableVertexAttribArray(program.positionAttribute);
+    glDisableVertexAttribArray(program.texCoordAttribute);
     
     float vertices[] = { -0.05, -0.7, 0.05, -0.7, 0.05, 0.7, -0.05, -0.7, 0.05, 0.7, -0.05, 0.7 };
     float texCoords[] = { 0.0, 1.0 , 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
