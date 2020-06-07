@@ -295,6 +295,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				CREATE_INFOPLIST_SECTION_IN_BINARY = NO;
 				DEVELOPMENT_TEAM = RFJV3GFY5Q;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -314,6 +315,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				CREATE_INFOPLIST_SECTION_IN_BINARY = NO;
 				DEVELOPMENT_TEAM = RFJV3GFY5Q;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",

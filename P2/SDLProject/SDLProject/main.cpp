@@ -35,7 +35,7 @@ glm::vec3 leftBar_position = glm::vec3(leftWhiteBar_x,0,0);
 glm::vec3 leftBar_movement = glm::vec3(0,0,0);
 glm::vec3 rightBar_position = glm::vec3(rightWhiteBar_x,0,0);
 glm::vec3 rightBar_movement = glm::vec3(0,0,0);
-glm::vec3 ball_position = glm::vec3(0,0,0);
+glm::vec3 ball_position = glm::vec3(-3.5f,0,0);
 glm::vec3 ball_movement = glm::vec3(0,0,0);
 
 GLuint playerTextureID;
@@ -65,7 +65,7 @@ GLuint LoadTexture(const char* filePath){
 
 void Initialize() {
     SDL_Init(SDL_INIT_VIDEO);
-    displayWindow = SDL_CreateWindow("Project 1!", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_OPENGL);
+    displayWindow = SDL_CreateWindow("Project 2!", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI);
     SDL_GLContext context = SDL_GL_CreateContext(displayWindow);
     SDL_GL_MakeCurrent(displayWindow, context);
     
@@ -140,14 +140,13 @@ void ProcessInput(){
         }
     }
 }
- // boarder x:5, y:3.5
- // ball x:0.15(0.1), y:0.15(0.1)
- // bar radius x:0.05 y:0.5
-void movement(glm::vec3& ball_position, float& indicator_x, float& indicator_y, const glm::vec3& rightBar_position, const glm::vec3& leftBar_position, float& ball_speed, float& bar_speed, float deltaTime){
+
+
+void movement(const glm::vec3& rightBar_position, const glm::vec3& leftBar_position, float deltaTime){
     if(indicator_x == 1){
         if(ball_position.x + (ball_speed * deltaTime) < 4.75f){
             ball_position.x += ball_speed * deltaTime;
-        }else if(ball_position.x + (ball_speed * deltaTime) >= 4.75f && (rightBar_position.y - 0.6) <= ball_position.y && ball_position.y <= (rightBar_position.y + 0.6)){
+        }else if(ball_position.x + (ball_speed * deltaTime) >= 4.75f && (rightBar_position.y - 0.7) <= ball_position.y && ball_position.y <= (rightBar_position.y + 0.7)){
             indicator_x = 0;
         }else{
             ball_speed = 0;
@@ -156,7 +155,7 @@ void movement(glm::vec3& ball_position, float& indicator_x, float& indicator_y, 
     else if(indicator_x == 0){
         if(ball_position.x + (ball_speed * deltaTime) > -4.75f){
             ball_position.x -= ball_speed * deltaTime;
-        }else if(ball_position.x + (ball_speed * deltaTime) <= -4.75f && (leftBar_position.y - 0.6) <= ball_position.y && ball_position.y <= (leftBar_position.y + 0.6)){
+        }else if(ball_position.x + (ball_speed * deltaTime) <= -4.75f && (leftBar_position.y - 0.7) <= ball_position.y && ball_position.y <= (leftBar_position.y + 0.7)){
             indicator_x = 1;
         }else{
             ball_speed = 0;
@@ -166,7 +165,6 @@ void movement(glm::vec3& ball_position, float& indicator_x, float& indicator_y, 
         if(ball_position.y + (ball_speed * deltaTime) < (3.8 - 0.1)){
                 ball_position.y += ball_speed * deltaTime;
             }else{
-    //            ball_position.x -= ball_speed * deltaTime;
                 indicator_y = 0;
             }
         }
@@ -187,7 +185,7 @@ void Update() {
     rightBar_position += rightBar_movement * bar_speed * deltaTime;
     leftBar_position += leftBar_movement * bar_speed * deltaTime;
     
-    movement(ball_position, indicator_x, indicator_y, rightBar_position, leftBar_position, ball_speed, bar_speed, deltaTime);
+    movement(rightBar_position, leftBar_position, deltaTime);
     ballMatrix = glm::mat4(1.0f);
     ballMatrix = glm::translate(ballMatrix, ball_position);
     
@@ -198,11 +196,23 @@ void Update() {
     leftWhiteBarMatrix = glm::translate(leftWhiteBarMatrix, leftBar_position);
 }
 
-//void renderTexture();
-
 void Render() {
     glClear(GL_COLOR_BUFFER_BIT);
     
+     float vertices1[] = {-0.15,-0.15,0.15,-0.15,0.15,0.15,-0.15,-0.15,0.15,0.15,-0.15,0.15};
+     float texCoords1[] = {0.0,1.0,1.0,1.0,1.0,0.0,0.0,1.0,1.0,0.0,0.0,0.0};
+     
+     glVertexAttribPointer(program.positionAttribute, 2, GL_FLOAT, false, 0, vertices1);
+     glEnableVertexAttribArray(program.positionAttribute);
+     glVertexAttribPointer(program.texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords1);
+     glEnableVertexAttribArray(program.texCoordAttribute);
+     
+     program.SetModelMatrix(ballMatrix);
+     glBindTexture(GL_TEXTURE_2D, ballTextureID);
+     glDrawArrays(GL_TRIANGLES, 0, 6);
+     
+     glDisableVertexAttribArray(program.positionAttribute);
+     glDisableVertexAttribArray(program.texCoordAttribute);
     
     float vertices[] = { -0.05, -0.7, 0.05, -0.7, 0.05, 0.7, -0.05, -0.7, 0.05, 0.7, -0.05, 0.7 };
     float texCoords[] = { 0.0, 1.0 , 1.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0 };
@@ -218,21 +228,6 @@ void Render() {
     
     program.SetModelMatrix(rightWhiteBarMatrix);
     glBindTexture(GL_TEXTURE_2D, whiteBarTextureID);
-    glDrawArrays(GL_TRIANGLES, 0, 6);
-    
-    glDisableVertexAttribArray(program.positionAttribute);
-    glDisableVertexAttribArray(program.texCoordAttribute);
-    
-    float vertices1[] = {-0.15,-0.15,0.15,-0.15,0.15,0.15,-0.15,-0.15,0.15,0.15,-0.15,0.15};
-    float texCoords1[] = {0.0,1.0,1.0,1.0,1.0,0.0,0.0,1.0,1.0,0.0,0.0,0.0};
-    
-    glVertexAttribPointer(program.positionAttribute, 2, GL_FLOAT, false, 0, vertices1);
-    glEnableVertexAttribArray(program.positionAttribute);
-    glVertexAttribPointer(program.texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords1);
-    glEnableVertexAttribArray(program.texCoordAttribute);
-    
-    program.SetModelMatrix(ballMatrix);
-    glBindTexture(GL_TEXTURE_2D, ballTextureID);
     glDrawArrays(GL_TRIANGLES, 0, 6);
     
     glDisableVertexAttribArray(program.positionAttribute);
