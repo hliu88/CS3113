@@ -23,6 +23,7 @@ public:
     bool jump = false;
     float jumpPower = 0;
     float speed;
+    float fuelPercent = 1.0f;
 
     GLuint textureID;
     

@@ -26,7 +26,7 @@ struct GameState {
 };
 
 GameState state;
-GLuint fontTextureID;
+GLuint fontTextureID, redBarTextureID, blackBarTextureID;
 
 SDL_Window* displayWindow;
 bool gameIsRunning = true;
@@ -39,10 +39,11 @@ GLuint LoadTexture(const char* filePath);
 void createPlatform();
 void DrawText(ShaderProgram *program, GLuint fontTextureID, std::string text,
               float size, float spacing, glm::vec3 position);
+void fuelBarRender(float percent);
 
 void Initialize() {
     SDL_Init(SDL_INIT_VIDEO);
-    displayWindow = SDL_CreateWindow("Textured!", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_OPENGL);
+    displayWindow = SDL_CreateWindow("Project 3: Lunar Lander!", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_OPENGL);
     SDL_GLContext context = SDL_GL_CreateContext(displayWindow);
     SDL_GL_MakeCurrent(displayWindow, context);
 #ifdef _WINDOWS
@@ -50,8 +51,8 @@ void Initialize() {
 #endif
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//    glViewport(0, 0, 640, 480);
-    glViewport(0, 0, 1280, 960);
+    glViewport(0, 0, 640, 480);
+//    glViewport(0, 0, 1280, 960);
     program.Load("shaders/vertex_textured.glsl", "shaders/fragment_textured.glsl");
     viewMatrix = glm::mat4(1.0f);
     modelMatrix = glm::mat4(1.0f);
@@ -82,10 +83,12 @@ void Initialize() {
     state.ship->animRows = 1;
     state.ship->size = 0.5;
     state.ship->height = 0.8f;
-    state.ship->width = 1.0f;
+    state.ship->width = 0.8f;
     state.ship->jumpPower = 1.0f;
     
     fontTextureID = LoadTexture("font1.png");
+    redBarTextureID = LoadTexture("redbar.png");
+    blackBarTextureID = LoadTexture("blackbar.png");
     
     createPlatform();
 }
@@ -103,41 +106,39 @@ void ProcessInput() {
             case SDL_KEYDOWN:
                 switch (event.key.keysym.sym) {
                     case SDLK_LEFT:
-//                        state.ship->acceleration.x -= 0.01f;
-//                        state.ship->animIndices = state.ship->animLeft;
                         break;
                     case SDLK_RIGHT:
-//                        state.ship->acceleration.x += 0.01f;
-//                        state.ship->animIndices = state.ship->animRight;
                         break;
                     case SDLK_SPACE:
-//                        if(state.ship->collidedBottom){
-//                            state.ship->jump = true;
-//                        }
                         break;
                 }
                 break; // SDL_KEYDOWN
         }
     }
     const Uint8 *keys = SDL_GetKeyboardState(NULL);
-    if (keys[SDL_SCANCODE_LEFT]) {
-//        state.ship->movement.x = -1.0f;
+    if (keys[SDL_SCANCODE_LEFT] && state.ship->fuelPercent > 0.0f) {
         state.ship->acceleration.x -= 0.01f;
-        state.ship->animIndices = state.ship->animLeft;
+        if(!state.ship->missionSuccess && !state.ship->missionFailed){
+            state.ship->animIndices = state.ship->animLeft;
+            state.ship->fuelPercent -= 0.005f;
+        }
     }
-    else if (keys[SDL_SCANCODE_RIGHT]) {
-//        state.ship->movement.x = 1.0f;
+    else if (keys[SDL_SCANCODE_RIGHT] && state.ship->fuelPercent > 0.0f) {
         state.ship->acceleration.x += 0.01f;
-        state.ship->animIndices = state.ship->animRight;
+        if(!state.ship->missionSuccess && !state.ship->missionFailed){
+            state.ship->animIndices = state.ship->animRight;
+            state.ship->fuelPercent -= 0.005f;
+        }
+        
     }
-    else if(keys[SDL_SCANCODE_UP]){
-        state.ship->movement.y = 1.0f;
-//        state.ship->acceleration.y += 0.1f;
-        state.ship->animIndices = state.ship->animUp;
+    else if(keys[SDL_SCANCODE_UP] && state.ship->fuelPercent > 0.0f){
+//        state.ship->movement.y = 0.5f;
+        state.ship->acceleration.y = 0.08f;
+        if(!state.ship->missionSuccess && !state.ship->missionFailed){
+            state.ship->animIndices = state.ship->animUp;
+            state.ship->fuelPercent -= 0.02f;
+        }
     }
-//    if (glm::length(state.ship->movement) > 1.0f) {
-//        state.ship->movement = glm::normalize(state.ship->movement);
-//    }
 }
 
 #define FIXED_TIMESTEP 0.0166666f
@@ -160,6 +161,8 @@ void Update() {
         deltaTime -= FIXED_TIMESTEP;
     }
     accumulator = deltaTime;
+    
+    
 }
 
 void Render() {
@@ -170,9 +173,11 @@ void Render() {
     state.ship->Render(&program);
     if(state.ship->missionFailed == true){
         DrawText(&program, fontTextureID, "Mission Failed!", 0.5f, -0.25f, glm::vec3(-1.5, 0, 0));
+        state.ship->acceleration = glm::vec3(0);
     }else if(state.ship->missionSuccess == true){
         DrawText(&program, fontTextureID, "Mission Successful!", 0.5f, -0.25f, glm::vec3(-2, 0, 0));
     }
+    fuelBarRender(state.ship->fuelPercent);
     SDL_GL_SwapWindow(displayWindow);
 }
 
@@ -279,8 +284,7 @@ void createPlatform(){
     }
 }
 
-void DrawText(ShaderProgram *program, GLuint fontTextureID, std::string text,
-                             float size, float spacing, glm::vec3 position){
+void DrawText(ShaderProgram *program, GLuint fontTextureID, std::string text, float size, float spacing, glm::vec3 position){
     float width = 1.0f / 16.0f;
     float height = 1.0f / 16.0f;
     std::vector<float> vertices;
@@ -306,7 +310,7 @@ void DrawText(ShaderProgram *program, GLuint fontTextureID, std::string text,
             u + width, v,
             u, v + height,
         });
-    } // end of for loop
+    }
     glm::mat4 modelMatrix = glm::mat4(1.0f);
     modelMatrix = glm::translate(modelMatrix, position);
     program->SetModelMatrix(modelMatrix);
@@ -319,4 +323,45 @@ void DrawText(ShaderProgram *program, GLuint fontTextureID, std::string text,
     glDrawArrays(GL_TRIANGLES, 0, (int)(text.size() * 6));
     glDisableVertexAttribArray(program->positionAttribute);
     glDisableVertexAttribArray(program->texCoordAttribute);
+}
+
+void fuelBarRender(float percent){
+    program.SetModelMatrix(modelMatrix);
+    
+    float vertices1[] = {-0.08,0,0.08,0,0.08,1.02,-0.08,0,0.08,1.02,-0.08,1.02};
+    float texCoords1[] = {0.0,1.0,1.0,1.0,1.0,0.0,0.0,1.0,1.0,0.0,0.0,0.0};
+    
+    glVertexAttribPointer(program.positionAttribute, 2, GL_FLOAT, false, 0, vertices1);
+    glEnableVertexAttribArray(program.positionAttribute);
+    glVertexAttribPointer(program.texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords1);
+    glEnableVertexAttribArray(program.texCoordAttribute);
+    
+    glBindTexture(GL_TEXTURE_2D, blackBarTextureID);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    
+    float top = 1.0;
+    if(top * percent < 0.02){
+        top = 0.02;
+    }else{
+        top *= percent;
+    }
+    
+    float vertices[] = {-0.05,0.02,0.05,0.02,0.05,top,-0.05,0.02,0.05,top,-0.05,top};
+    float texCoords[] = {0.0,1.0,1.0,1.0,1.0,0.0,0.0,1.0,1.0,0.0,0.0,0.0};
+    
+    glVertexAttribPointer(program.positionAttribute, 2, GL_FLOAT, false, 0, vertices);
+    glEnableVertexAttribArray(program.positionAttribute);
+    glVertexAttribPointer(program.texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords);
+    glEnableVertexAttribArray(program.texCoordAttribute);
+    
+    glBindTexture(GL_TEXTURE_2D, redBarTextureID);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    
+    glDisableVertexAttribArray(program.positionAttribute);
+    glDisableVertexAttribArray(program.texCoordAttribute);
+    
+    modelMatrix = glm::mat4(1.0f);
+    modelMatrix = glm::translate(modelMatrix, glm::vec3(4.3f,2.2f,0.0f));
+    
+    DrawText(&program, fontTextureID, "Fuel: ", 0.5, -0.25, glm::vec3(3.0f,2.5f,0.0f));
 }

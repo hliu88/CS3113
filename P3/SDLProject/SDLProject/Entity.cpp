@@ -74,8 +74,6 @@ void Entity::Update(float deltaTime, Entity* platforms, int platformCount){
     collidedBottom = false;
     collidedLeft = false;
     collidedRight = false;
-    missionSuccess = false;
-    missionFailed = false;
     if (animIndices != NULL) {
         if (glm::length(movement) != 0) {
             animTime += deltaTime;
@@ -94,10 +92,19 @@ void Entity::Update(float deltaTime, Entity* platforms, int platformCount){
     velocity += acceleration * deltaTime;
     position.y += velocity.y * deltaTime;
     CheckCollisionsY(platforms, platformCount);
-    position.x += velocity.x * deltaTime;
+    position.x += velocity.x * deltaTime * speed;
     CheckCollisionsX(platforms, platformCount);
     modelMatrix = glm::mat4(1.0f);
     modelMatrix = glm::translate(modelMatrix, position);
+    if(acceleration.x > 0.001){
+        acceleration.x -= 0.001;
+    }
+    if(acceleration.x < -0.001){
+        acceleration.x += 0.001;
+    }
+    if(acceleration.y > -9.81){
+        acceleration.y -= 9.81;
+    }
 }
 
 void Entity::DrawSpriteFromTextureAtlas(ShaderProgram *program, GLuint textureID, int index, float size){

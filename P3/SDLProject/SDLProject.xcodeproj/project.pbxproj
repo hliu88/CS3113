@@ -10,6 +10,8 @@
 		1F59B0412492C1CB00308AA7 /* moonsurfacebox.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1F59B0402492C1C700308AA7 /* moonsurfacebox.png */; };
 		1F59B0432493483100308AA7 /* font1.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1F59B042249347C100308AA7 /* font1.png */; };
 		1F59B0452493509300308AA7 /* moonlandingbox.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1F59B0442493509000308AA7 /* moonlandingbox.png */; };
+		1F59B048249495F000308AA7 /* redbar.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1F59B047249495EC00308AA7 /* redbar.png */; };
+		1F59B04B2494966F00308AA7 /* blackbar.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1F59B04A2494966B00308AA7 /* blackbar.png */; };
 		1FD2333F2490BC8900FF30AC /* Entity.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1FD2333D2490BC8900FF30AC /* Entity.cpp */; };
 		1FEDB2FA2491A16100FD3134 /* platformPack_tile001.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1FEDB2F924917A6500FD3134 /* platformPack_tile001.png */; };
 		1FEDB2FC2492056000FD3134 /* lunarlander.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1FEDB2FB249204B200FD3134 /* lunarlander.png */; };
@@ -31,6 +33,8 @@
 			dstSubfolderSpec = 6;
 			files = (
 				DBDF1B612323DE9E007CECB1 /* shaders in CopyFiles */,
+				1F59B04B2494966F00308AA7 /* blackbar.png in CopyFiles */,
+				1F59B048249495F000308AA7 /* redbar.png in CopyFiles */,
 				1FEDB2FC2492056000FD3134 /* lunarlander.png in CopyFiles */,
 				1F59B0452493509300308AA7 /* moonlandingbox.png in CopyFiles */,
 				1F59B0412492C1CB00308AA7 /* moonsurfacebox.png in CopyFiles */,
@@ -45,6 +49,8 @@
 		1F59B0402492C1C700308AA7 /* moonsurfacebox.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = moonsurfacebox.png; sourceTree = "<group>"; };
 		1F59B042249347C100308AA7 /* font1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = font1.png; sourceTree = "<group>"; };
 		1F59B0442493509000308AA7 /* moonlandingbox.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = moonlandingbox.png; sourceTree = "<group>"; };
+		1F59B047249495EC00308AA7 /* redbar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = redbar.png; sourceTree = "<group>"; };
+		1F59B04A2494966B00308AA7 /* blackbar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blackbar.png; sourceTree = "<group>"; };
 		1FD2333D2490BC8900FF30AC /* Entity.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Entity.cpp; sourceTree = "<group>"; };
 		1FD2333E2490BC8900FF30AC /* Entity.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Entity.h; sourceTree = "<group>"; };
 		1FEDB2F924917A6500FD3134 /* platformPack_tile001.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = platformPack_tile001.png; sourceTree = "<group>"; };
@@ -99,6 +105,8 @@
 		DBDF1B512323DE3F007CECB1 /* SDLProject */ = {
 			isa = PBXGroup;
 			children = (
+				1F59B04A2494966B00308AA7 /* blackbar.png */,
+				1F59B047249495EC00308AA7 /* redbar.png */,
 				1F59B0442493509000308AA7 /* moonlandingbox.png */,
 				1F59B042249347C100308AA7 /* font1.png */,
 				1F59B0402492C1C700308AA7 /* moonsurfacebox.png */,
