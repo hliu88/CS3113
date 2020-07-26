@@ -16,7 +16,7 @@
 enum EntityType {PLAYER, PLATFORM, ENEMY};
 
 enum AIType {WALKER, WAITNGO};
-enum AIState{WALKING, ATTACKING};
+enum AIState{IDLE, WALKING, ATTACKING};
 
 class Entity {
 public:
@@ -85,9 +85,10 @@ public:
     
     bool CheckCollision(Entity* other);
     void CheckCollisionsY(Entity* objects, int objectCount);
-    void CheckCollisionsYE(Entity* objects, int objectCount);
+    void CheckCollisionsYE(Map *map);
     void CheckCollisionsX(Entity* objects, int objectCount);
     void CheckCollisionsX(Map* map);
+    void CheckCollisionsXE(Map *map);
     void CheckCollisionsY(Map* map);
     bool isAlive();
     
@@ -97,6 +98,7 @@ public:
     
     void AI(Entity* player, Map* map);
     void AIWalker(Map* map);
-    void AIWaitAndGO(Entity* player);
+    void AIWaitAndGO(Entity* player, Map* map);
     void CheckDamage(Entity* enemies, int enemyCount);
+    bool CheckCollision(Map* map);
 };

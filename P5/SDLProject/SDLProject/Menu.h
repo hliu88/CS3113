@@ -1,14 +1,8 @@
-//
-//  Menu.hpp
-//  SDLProject
-//
-//  Created by Guanchen Liu on 7/22/20.
-//
+#include "Scene.h"
+class Menu : public Scene {
 
-#ifndef Menu_hpp
-#define Menu_hpp
-
-#include <stdio.h>
-
-#endif /* Menu_hpp */
-//void Menu;
+public:
+    void Initialize() override;
+    void Update(float deltaTime) override;
+    void Render(ShaderProgram *program) override;
+};

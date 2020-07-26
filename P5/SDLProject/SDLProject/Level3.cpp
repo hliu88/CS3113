@@ -29,7 +29,7 @@ void Level3::Initialize() {
     state.player = new Entity();
     state.player->entityType = PLAYER;
     state.player->position = glm::vec3(2, -9, 0);
-//    state.player->position = glm::vec3(7,1,0);
+//    state.player->position = glm::vec3(9,0,0);
     state.player->startPt = glm::vec3(2,-9,0);
     state.player->movement = glm::vec3(0);
     state.player->velocity = state.velocity;
@@ -59,27 +59,40 @@ void Level3::Initialize() {
     state.player->width = 0.5f;
     
     state.enemies = new Entity[LEVEL3_ENEMY_COUNT];
-    GLuint enemyTextureID = Util::LoadTexture("ctg.png");
-    
     state.enemies[0].entityType = ENEMY;
-    state.enemies[0].textureID = enemyTextureID;
-    state.enemies[0].position = glm::vec3(4, -2.25, 0);
-    state.enemies[0].speed = 1;
-    state.enemies[0].aiType = WAITNGO;
-//    state.enemies[0].aiState = IDLE;
-    state.enemies[0].isActive = false;
+    state.enemies[0].textureID = Util::LoadTexture("slime.png");
+    state.enemies[0].animIndices = new int[4]{0,1,2,3};
+    state.enemies[0].animFrames = 4;
+    state.enemies[0].animRows = 1;
+    state.enemies[0].animCols = 4;
+    state.enemies[0].height = 0.1;
+    state.enemies[0].width = 0.5;
+    state.enemies[0].animSpeed = 0.15f;
+    state.enemies[0].position = glm::vec3(3, -3.25,0);
+    state.enemies[0].acceleration = glm::vec3(0,-9.8,0);
+    state.enemies[0].speed = 0.5f;
+    state.enemies[0].aiType = WALKER;
+    state.enemies[0].aiState = WALKING;
+    state.enemies[0].alwaysAnim = true;
+    state.enemies[0].renderSize = 0.5;
 
     state.map = new Map(LEVEL3_WIDTH, LEVEL3_HEIGHT, level3_data, mapTextureID, 1.0f, 4, 1);
 
 }
 void Level3::Update(float deltaTime) {
     state.player->Update(deltaTime, state.player, state.enemies, LEVEL3_ENEMY_COUNT, state.map);
-    if(state.player->position.y >= 0 && state.player->position.x > 5.5 && state.player->position.x < 6.5){
-        state.nextScene = 3;
+    for(int i = 0; i < LEVEL3_ENEMY_COUNT; i++){
+        state.enemies[i].Update(deltaTime, state.player, state.enemies, LEVEL3_ENEMY_COUNT, state.map);
     }
+//    if(state.player->position.y >= 0 && state.player->position.x > 5.5 && state.player->position.x < 6.5){
+//        state.nextScene = 3;
+//    }
     std::cout << state.player->position.x << " " << state.player->position.y << std::endl;
 }
 void Level3::Render(ShaderProgram *program) {
     state.map->Render(program);
     state.player->Render(program);
+    for(int i = 0; i < LEVEL3_ENEMY_COUNT; i++){
+        state.enemies[i].Render(program);
+    }
 }

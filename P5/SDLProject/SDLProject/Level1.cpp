@@ -57,32 +57,51 @@ void Level1::Initialize() {
     state.player->height = 1.0f;
     state.player->width = 0.5f;
     
+//    state.enemies = new Entity[LEVEL1_ENEMY_COUNT];
+//    state.enemies[0].entityType = ENEMY;
+//    state.enemies[0].textureID = Util::LoadTexture("koopa.png");
+//    state.enemies[0].animLeft = new int[4]{0,1,2,3};
+//    state.enemies[0].animRight = new int[4]{4,5,6,7};
+//    state.enemies[0].animIndices = state.enemies[0].animLeft;
+//    state.enemies[0].animFrames = 4;
+//    state.enemies[0].animRows = 1;
+//    state.enemies[0].animCols = 8;
+//    state.enemies[0].height = 1;
+//    state.enemies[0].width = 1;
+//    state.enemies[0].animSpeed = 0.175f;
+//    state.enemies[0].position = glm::vec3(6,-9,0);
+//    state.enemies[0].acceleration = glm::vec3(0,0,0);
+//    state.enemies[0].speed = 8.0f;
+//    state.enemies[0].aiType = WALKER;
+//    state.enemies[0].aiState = WALKING;
+//    state.enemies[0].alwaysAnim = true;
+//    state.enemies[0].renderSize = 1;
+    
     state.enemies = new Entity[LEVEL1_ENEMY_COUNT];
     state.enemies[0].entityType = ENEMY;
-    state.enemies[0].textureID = Util::LoadTexture("koopa.png");
-    state.enemies[0].animLeft = new int[4]{0,1,2,3};
-    state.enemies[0].animRight = new int[4]{4,5,6,7};
-    state.enemies[0].animIndices = state.enemies[1].animRight;
+    state.enemies[0].textureID = Util::LoadTexture("slime.png");
+    state.enemies[0].animIndices = new int[4]{0,1,2,3};
     state.enemies[0].animFrames = 4;
     state.enemies[0].animRows = 1;
-    state.enemies[0].animCols = 8;
-    state.enemies[0].height = 1;
+    state.enemies[0].animCols = 4;
+    state.enemies[0].height = 0.1;
     state.enemies[0].width = 0.5;
-    state.enemies[0].animSpeed = 0.175f;
-//    state.enemies[0].position = glm::vec3(6,-9.5,0);
-    state.enemies[0].position = glm::vec3(6, -10,0);
-    state.enemies[0].acceleration = glm::vec3(0,-9.8f,0);
-    state.enemies[0].speed = 1.0f;
+    state.enemies[0].animSpeed = 0.15f;
+    state.enemies[0].position = glm::vec3(6,-9.25,0);
+    state.enemies[0].acceleration = glm::vec3(0,-9.8,0);
+    state.enemies[0].speed = 0.5f;
     state.enemies[0].aiType = WALKER;
     state.enemies[0].aiState = WALKING;
     state.enemies[0].alwaysAnim = true;
+    state.enemies[0].renderSize = 0.5;
+    
     
 }
 void Level1::Update(float deltaTime) {
-    state.player->Update(deltaTime, state.player, state.enemies, LEVEL1_ENEMY_COUNT, state.map);
     for(int i = 0; i < LEVEL1_ENEMY_COUNT; i++){
         state.enemies[i].Update(deltaTime, state.player, state.enemies, LEVEL1_ENEMY_COUNT, state.map);
     }
+    state.player->Update(deltaTime, state.player, state.enemies, LEVEL1_ENEMY_COUNT, state.map);
     state.player->CheckDamage(state.enemies, LEVEL1_ENEMY_COUNT);
     if(state.player->position.y >= 0 && state.player->position.x > 5.5 && state.player->position.x < 6.5){
         state.nextScene = 2;

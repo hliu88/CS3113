@@ -57,25 +57,24 @@ void Level2::Initialize() {
     state.player->height = 1.0f;
     state.player->width = 0.5f;
     
+    
     state.enemies = new Entity[LEVEL2_ENEMY_COUNT];
     state.enemies[0].entityType = ENEMY;
-    state.enemies[0].textureID = Util::LoadTexture("koopa.png");
-    state.enemies[0].animLeft = new int[4]{0,1,2,3};
-    state.enemies[0].animRight = new int[4]{4,5,6,7};
-    state.enemies[0].animIndices = state.enemies[1].animRight;
+    state.enemies[0].textureID = Util::LoadTexture("slime.png");
+    state.enemies[0].animIndices = new int[4]{0,1,2,3};
     state.enemies[0].animFrames = 4;
     state.enemies[0].animRows = 1;
-    state.enemies[0].animCols = 8;
-    state.enemies[0].height = 1;
+    state.enemies[0].animCols = 4;
+    state.enemies[0].height = 0.1;
     state.enemies[0].width = 0.5;
-    state.enemies[0].animSpeed = 0.175f;
-//    state.enemies[0].position = glm::vec3(6,-9.5,0);
-    state.enemies[0].position = glm::vec3(3, -10,0);
-    state.enemies[0].acceleration = glm::vec3(0,-9.8f,0);
-    state.enemies[0].speed = 1.0f;
+    state.enemies[0].animSpeed = 0.15f;
+    state.enemies[0].position = glm::vec3(3, -8.25,0);
+    state.enemies[0].acceleration = glm::vec3(0,-9.8,0);
+    state.enemies[0].speed = 0.5f;
     state.enemies[0].aiType = WALKER;
     state.enemies[0].aiState = WALKING;
     state.enemies[0].alwaysAnim = true;
+    state.enemies[0].renderSize = 0.5;
 
 //    state.map = new Map(LEVEL2_WIDTH, LEVEL2_HEIGHT, level2_data, mapTextureID, 1.0f, 4, 1);
 

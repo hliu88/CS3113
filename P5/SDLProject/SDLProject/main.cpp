@@ -15,6 +15,7 @@
 #include "Entity.h"
 #include "Map.h"
 #include "Scene.h"
+#include "Menu.h"
 #include "Level1.h"
 #include "Level2.h"
 #include "Level3.h"
@@ -35,7 +36,7 @@ void SwitchToScene(Scene *scene) {
 
 void Initialize() {
     SDL_Init(SDL_INIT_VIDEO);
-    displayWindow = SDL_CreateWindow("Platformer!", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_OPENGL);
+    displayWindow = SDL_CreateWindow("Jump To The Top!", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 640, 480, SDL_WINDOW_OPENGL);
     SDL_GLContext context = SDL_GL_CreateContext(displayWindow);
     SDL_GL_MakeCurrent(displayWindow, context);
     
@@ -62,11 +63,11 @@ void Initialize() {
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     
-//    sceneList[0] = new Menu();
+    sceneList[0] = new Menu();
     sceneList[1] = new Level1();
     sceneList[2] = new Level2();
     sceneList[3] = new Level3();
-    SwitchToScene(sceneList[2]);
+    SwitchToScene(sceneList[0]);
 }
 
 void ProcessInput() {
@@ -83,6 +84,11 @@ void ProcessInput() {
                 
             case SDL_KEYDOWN:
                 switch (event.key.keysym.sym) {
+                    case SDLK_RETURN:
+                        if(currentScene == sceneList[0]){
+                            SwitchToScene(sceneList[1]);
+                        }
+                        break;
                     case SDLK_LEFT:
                         break;
                         
@@ -158,12 +164,13 @@ void Update() {
     accumulator = deltaTime;
     
     viewMatrix = glm::mat4(1.0f);
+    
     if(currentScene->state.player->position.y < -10){
         currentScene->state.player->respawn = true;
         currentScene->state.player->position = currentScene->state.player->startPt;
         currentScene->state.player->lives -= 1;
     }
-    if(currentScene == sceneList[3] && currentScene->state.player->position.y >= -0.5 && currentScene->state.player->position.x <= 8.4999 && currentScene->state.player->position.x >= 6.5){
+    if(currentScene == sceneList[3] && currentScene->state.player->position.y >= -0.5 && currentScene->state.player->position.y <= 0 && currentScene->state.player->position.x <= 8.4999 && currentScene->state.player->position.x >= 6.5){
 //        viewMatrix = glm::translate(viewMatrix, glm::vec3(0,3,0));
         currentScene->state.player->win = true;
         currentScene->state.player->canMove = 0;
