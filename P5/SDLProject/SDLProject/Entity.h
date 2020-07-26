@@ -8,6 +8,7 @@
 #define GL_GLEXT_PROTOTYPES 1
 #include <SDL.h>
 #include <SDL_opengl.h>
+#include <SDL_mixer.h>
 #include "glm/mat4x4.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "ShaderProgram.h"
@@ -29,6 +30,9 @@ public:
     glm::vec3 acceleration;
     glm::vec3 velocity;
     glm::vec3 startPt;
+    
+    Mix_Chunk *bounce;
+    Mix_Chunk *land;
     
     float width = 1;
     float height = 1;

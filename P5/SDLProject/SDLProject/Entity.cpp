@@ -8,6 +8,8 @@ Entity::Entity()
     velocity = glm::vec3(0);
     speed = 0;
     modelMatrix = glm::mat4(1.0f);
+    bounce = Mix_LoadWAV("bounce.wav");
+    land = Mix_LoadWAV("landing.wav");
 }
 
 bool Entity::CheckCollision(Entity* other){
@@ -23,7 +25,7 @@ void Entity::CheckCollisionsY(Entity* objects, int objectCount){
     for(int i = 0; i < objectCount; i++){
         Entity* object = &objects[i];
         if(CheckCollision(object)){
-            float ydist = fabs(position.y - object->position.y);
+            float ydist = fabs(position.y - object->position.y - 0.5);
             float penetrationY = fabs(ydist - (height / 2.0f) - (object->height / 2.0f));
             if(velocity.y > 0){
                 position.y -= penetrationY;
@@ -92,6 +94,9 @@ void Entity::CheckCollisionsY(Map *map)
         position.y += penetration_y;
         velocity.y = 0;
         collidedBottom = true;
+        if(inAir == true){
+            Mix_PlayChannel(-1, land, 0);
+        }
         velocity.x = 0;
         if(!chargeJump){
             if(lastOrientation == 1){
@@ -106,6 +111,9 @@ void Entity::CheckCollisionsY(Map *map)
         position.y += penetration_y;
         velocity.y = 0;
         collidedBottom = true;
+        if(inAir == true){
+            Mix_PlayChannel(-1, land, 0);
+        }
         velocity.x = 0;
         if(!chargeJump){
             if(lastOrientation == 1){
@@ -120,6 +128,9 @@ void Entity::CheckCollisionsY(Map *map)
         position.y += penetration_y;
         velocity.y = 0;
         collidedBottom = true;
+        if(inAir == true){
+            Mix_PlayChannel(-1, land, 0);
+        }
         velocity.x = 0;
         if(!chargeJump){
             if(lastOrientation == 1){
@@ -143,6 +154,7 @@ void Entity::CheckCollisionsX(Map *map)
      if (map->IsSolid(left, &penetration_x, &penetration_y) && velocity.x < 0) {
          position.x += penetration_x;
          if(entityType == PLAYER){
+             Mix_PlayChannel(-1, bounce, 0);
              velocity.x = - velocity.x / 2;
          }
          collidedLeft = true;
@@ -151,6 +163,7 @@ void Entity::CheckCollisionsX(Map *map)
      if (map->IsSolid(right, &penetration_x, &penetration_y) && velocity.x > 0) {
          position.x -= penetration_x;
          if(entityType == PLAYER){
+             Mix_PlayChannel(-1, bounce, 0);
              velocity.x = - velocity.x / 2;
          }
          collidedRight = true;
@@ -212,7 +225,6 @@ void Entity::AIWalker(Map* map){
         case IDLE:
             break;
         case WALKING:
-            std::cout << collidedBottom << std::endl;
             if(lastOrientation == -1){
                 if(!collidedBottom){
                     lastOrientation = 1;
