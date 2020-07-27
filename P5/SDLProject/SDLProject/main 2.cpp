@@ -7,7 +7,6 @@
 #define GL_GLEXT_PROTOTYPES 1
 #include <SDL.h>
 #include <SDL_opengl.h>
-#include <SDL_mixer.h>
 #include "glm/mat4x4.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "ShaderProgram.h"
@@ -30,10 +29,6 @@ glm::mat4 viewMatrix, modelMatrix, projectionMatrix;
 Scene *currentScene;
 Scene *sceneList[4];
 
-Mix_Music *music;
-Mix_Chunk *bounce;
-Mix_Chunk *jump;
-
 void SwitchToScene(Scene *scene) {
     currentScene = scene;
     currentScene->Initialize();
@@ -49,8 +44,8 @@ void Initialize() {
     glewInit();
 #endif
     
-    glViewport(0, 0, 640, 480);
-//    glViewport(0, 0, 1280, 960);
+//    glViewport(0, 0, 640, 480);
+    glViewport(0, 0, 1280, 960);
     
     program.Load("shaders/vertex_textured.glsl", "shaders/fragment_textured.glsl");
     
@@ -67,13 +62,6 @@ void Initialize() {
     glEnable(GL_BLEND);
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    
-    Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
-    music = Mix_LoadMUS("dooblydoo.mp3");
-    Mix_PlayMusic(music, -1);
-    Mix_VolumeMusic(MIX_MAX_VOLUME/4);
-    
-    jump = Mix_LoadWAV("jump.wav");
     
     sceneList[0] = new Menu();
     sceneList[1] = new Level1();
@@ -128,7 +116,6 @@ void ProcessInput() {
         }
     }else if(currentScene->state.player->chargeJump == true){
         if(currentScene->state.player->collidedBottom){
-            Mix_PlayChannel(-1, jump, 0);
             currentScene->state.player->velocity.y += currentScene->state.player->jumpPower;
             currentScene->state.player->velocity.x = currentScene->state.player->lastOrientation * currentScene->state.player->velocity.y / 2;
             currentScene->state.player->inAir = true;
