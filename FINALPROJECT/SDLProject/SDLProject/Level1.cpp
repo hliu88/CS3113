@@ -2,8 +2,9 @@
 #define LEVEL1_WIDTH 132
 #define LEVEL1_HEIGHT 8
 
-#define ENEMY_COUNT 50
+#define ENEMY_COUNT 150
 #define BULLET_COUNT 100
+#define hpCount 10
 
 unsigned int level1_data[] =
 {
@@ -26,7 +27,7 @@ void Level1::Initialize() {
     
     state.player = new Entity();
     state.player->entityType = PLAYER;
-    state.player->position = glm::vec3(5, -5, 0);
+    state.player->position = glm::vec3(1, -5, 0);
     state.player->movement = glm::vec3(0);
     state.player->acceleration = glm::vec3(0, 0, 0);
     state.player->speed = 2.0f;
@@ -42,6 +43,7 @@ void Level1::Initialize() {
     state.player->animRows = 1;
     state.player->height = 0.8f;
     state.player->width = 0.8f;
+    state.player->health = 200;
 
     state.playerBullets = new Entity[50];
     GLuint bulletTextureID = Util::LoadTexture("blueLaser.png");
@@ -49,7 +51,7 @@ void Level1::Initialize() {
         state.playerBullets[i].isActive = false;
         state.playerBullets[i].entityType = PLAYERBULLET;
         state.playerBullets[i].textureID = bulletTextureID;
-        state.playerBullets[i].speed = 5;
+        state.playerBullets[i].speed = 7;
         state.playerBullets[i].height = 0.2f;
         state.playerBullets[i].width = 0.2f;
         state.playerBullets[i].renderSize = 0.2f;
@@ -133,7 +135,7 @@ void Level1::Initialize() {
     for(int i = 0; i < 50; i++){
         state.enemies[i].entityType = ENEMY;
         state.enemies[i].textureID = enemy1TextureID;
-        state.enemies[i].position = glm::vec3(rand() % 120 + 8, rand() % 7 - 7 , 0);
+        state.enemies[i].position = glm::vec3(rand() % 100 + 10, rand() % 7 - 7 , 0);
         state.enemies[i].speed = 0.75;
         state.enemies[i].aiType = WAITNGO;
         state.enemies[i].animIndices = new int[1]{0};;
@@ -150,30 +152,49 @@ void Level1::Initialize() {
         state.enemies[i].dps = 30;
         state.enemies[i].health = 10;
     }
+    
+    state.hp = new Entity[10];
+    GLuint hpTextureID = Util::LoadTexture("heart.png");
+    for(int i = 0; i < 10; i++){
+        state.hp[i].entityType = HP;
+        state.hp[i].textureID = hpTextureID;
+        state.hp[i].speed = 0;
+        state.hp[i].animIndices = new int[1]{0};;
+        state.hp[i].animFrames = 1;
+        state.hp[i].animIndex = 0;
+        state.hp[i].animTime = 0;
+        state.hp[i].animCols = 1;
+        state.hp[i].animRows = 1;
+        state.hp[i].isActive = false;
+        state.hp[i].width = 0.5f;
+        state.hp[i].height = 0.5f;
+        state.hp[i].renderSize = 0.5f;
+        state.hp[i].dps = -20;
+    }
 
     state.map = new Map(LEVEL1_WIDTH, LEVEL1_HEIGHT, level1_data, mapTextureID, 1.0f, 4, 1);
 
 }
 void Level1::Update(float deltaTime, float horizontalX) {
-    state.player->Update(deltaTime, state.player, state.enemies, ENEMY_COUNT, state.map, horizontalX, state.turrentBullets);
+    state.player->Update(deltaTime, state.player, state.enemies, ENEMY_COUNT, state.map, horizontalX, state.turrentBullets, state.hp, hpCount);
     
     for(int i = 0; i < 50; i++){
-        state.playerBullets[i].Update(deltaTime, state.player, state.enemies, ENEMY_COUNT, state.map, horizontalX, state.turrentBullets);
-        state.turrentBullets[i].Update(deltaTime, state.player, state.enemies, ENEMY_COUNT, state.map, horizontalX, state.turrentBullets);
+        state.playerBullets[i].Update(deltaTime, state.player, state.enemies, ENEMY_COUNT, state.map, horizontalX, state.turrentBullets, state.hp, hpCount);
+        state.turrentBullets[i].Update(deltaTime, state.player, state.enemies, ENEMY_COUNT, state.map, horizontalX, state.turrentBullets, state.hp, hpCount);
     }
     
     for(int i = 0; i < 50; i++){
-        state.turrentsUp[i].Update(deltaTime, state.player, state.enemies, ENEMY_COUNT, state.map, horizontalX, state.turrentBullets);
-        state.turrentsDown[i].Update(deltaTime, state.player, state.enemies, ENEMY_COUNT, state.map, horizontalX, state.turrentBullets);
+        state.turrentsUp[i].Update(deltaTime, state.player, state.enemies, ENEMY_COUNT, state.map, horizontalX, state.turrentBullets, state.hp, hpCount);
+        state.turrentsDown[i].Update(deltaTime, state.player, state.enemies, ENEMY_COUNT, state.map, horizontalX, state.turrentBullets, state.hp, hpCount);
 
     }
     
     for(int i = 0; i < 50; i++){
-        state.enemies[i].Update(deltaTime, state.player, state.enemies, ENEMY_COUNT, state.map, horizontalX, state.turrentBullets);
+        state.enemies[i].Update(deltaTime, state.player, state.enemies, ENEMY_COUNT, state.map, horizontalX, state.turrentBullets, state.hp, hpCount);
     }
     
-    if(state.player->position.x >= 50){
-        state.nextScene = 1;
+    for(int i = 0; i < 10; i++){
+        state.hp[i].Update(deltaTime, state.player, state.enemies, ENEMY_COUNT, state.map, horizontalX, state.turrentBullets, state.hp, hpCount);
     }
 }
 void Level1::Render(ShaderProgram *program) {
@@ -189,6 +210,10 @@ void Level1::Render(ShaderProgram *program) {
     for(int i = 0; i < ENEMY_COUNT; i++){
         state.enemies[i].Render(program);
     }
+    for(int i = 0; i < 10; i++){
+        state.hp[i].Render(program);
+    }
+    
     state.player->Render(program);
 
 }

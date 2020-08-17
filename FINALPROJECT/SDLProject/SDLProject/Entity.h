@@ -12,8 +12,9 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "ShaderProgram.h"
 #include "Map.h"
+#include <stdlib.h>
 
-enum EntityType {PLAYER, PLATFORM, ENEMY, PLAYERBULLET, TURRENT, TURRENTBULLET};
+enum EntityType {PLAYER, PLATFORM, ENEMY, PLAYERBULLET, TURRENT, TURRENTBULLET, HP};
 
 enum AIType {WALKER, WAITNGO};
 enum AIState{ IDLE, WALKING, ATTACKING};
@@ -66,6 +67,9 @@ public:
     bool isActive = true;
     bool shoot = false;
     
+    bool dead = false;
+    bool success = false;
+    
     bool collidedTop = false;
     bool collidedBottom = false;
     bool collidedLeft = false;
@@ -75,14 +79,14 @@ public:
     
     bool CheckCollision(Entity* other);
     void CheckCollisionsY(Entity* objects, int objectCount);
-    void CheckCollisionsX(Entity* objects, int objectCount);
+    void CheckCollisionsX(Entity* objects, int objectCount, Entity* hp, int hpCount);
     void CheckCollisionsX(Map* map);
     void CheckCollisionsY(Map* map);
     void CheckCollisionEdge(float horizontalX);
     
     void turrentUpdate(Entity* player, Entity* turrentBullets);
     
-    void Update(float deltaTime, Entity* player, Entity* objects, int objectCount, Map* map, float horizontalX, Entity* turrentBullets);
+    void Update(float deltaTime, Entity* player, Entity* objects, int objectCount, Map* map, float horizontalX, Entity* turrentBullets, Entity* hp, int hpCount);
     void Render(ShaderProgram *program);
     void DrawSpriteFromTextureAtlas(ShaderProgram *program, GLuint textureID, int index);
     

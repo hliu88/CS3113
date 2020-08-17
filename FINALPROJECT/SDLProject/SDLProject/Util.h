@@ -16,4 +16,7 @@ public:
     static GLuint LoadTexture(const char* filePath);
     static void DrawText(ShaderProgram *program, GLuint fontTextureID, std::string
 text, float size, float spacing, glm::vec3 position);
+    static void fuelBarRender(ShaderProgram *program, float percent, glm::vec3 position);
+    static void ProgressBarRender(ShaderProgram *program, float percent, glm::vec3 position);
+    
 };

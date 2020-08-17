@@ -21,6 +21,7 @@ struct GameState {
     Entity *turrentBullets;
     Entity *turrentsUp;
     Entity *turrentsDown;
+    Entity *hp;
     int nextScene;
 };
 class Scene {

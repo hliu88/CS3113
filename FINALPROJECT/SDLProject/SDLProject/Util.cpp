@@ -75,3 +75,91 @@ void Util::DrawText(ShaderProgram *program, GLuint fontTexture, std::string text
     glDisableVertexAttribArray(program->positionAttribute);
     glDisableVertexAttribArray(program->texCoordAttribute);
 }
+
+void Util::fuelBarRender(ShaderProgram *program, float percent, glm::vec3 position){
+    glm::mat4 modelMatrix = glm::mat4(1.0f);
+    modelMatrix = glm::translate(modelMatrix, glm::vec3(position.x - 0.1,-1.5f,0.0f));
+    program->SetModelMatrix(modelMatrix);
+    
+    float vertices1[] = {-0.08,0,0.08,0,0.08,1.02,-0.08,0,0.08,1.02,-0.08,1.02};
+    float texCoords1[] = {0.0,1.0,1.0,1.0,1.0,0.0,0.0,1.0,1.0,0.0,0.0,0.0};
+
+    glVertexAttribPointer(program->positionAttribute, 2, GL_FLOAT, false, 0, vertices1);
+    glEnableVertexAttribArray(program->positionAttribute);
+    glVertexAttribPointer(program->texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords1);
+    glEnableVertexAttribArray(program->texCoordAttribute);
+
+    GLuint whiteBarTextureID = LoadTexture("whitebar.png");
+    glBindTexture(GL_TEXTURE_2D, whiteBarTextureID);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    
+    float top = 1.0;
+    if(top * percent < 0.02){
+        top = 0.02;
+    }else{
+        top *= percent;
+    }
+    
+    float vertices[] = {-0.05,0.02,0.05,0.02,0.05,top,-0.05,0.02,0.05,top,-0.05,top};
+    float texCoords[] = {0.0,1.0,1.0,1.0,1.0,0.0,0.0,1.0,1.0,0.0,0.0,0.0};
+    
+    glVertexAttribPointer(program->positionAttribute, 2, GL_FLOAT, false, 0, vertices);
+    glEnableVertexAttribArray(program->positionAttribute);
+    glVertexAttribPointer(program->texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords);
+    glEnableVertexAttribArray(program->texCoordAttribute);
+    
+    GLuint redBarTextureID = LoadTexture("redbar.png");
+    glBindTexture(GL_TEXTURE_2D, redBarTextureID);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    
+    glDisableVertexAttribArray(program->positionAttribute);
+    glDisableVertexAttribArray(program->texCoordAttribute);
+    
+    modelMatrix = glm::mat4(1.0f);
+    GLuint fontTexture = LoadTexture("font1.png");
+    DrawText(program, fontTexture, "Health: ", 0.4, -0.25, glm::vec3(position.x - 1.2,-0.65f,0.0f));
+}
+
+void Util::ProgressBarRender(ShaderProgram *program, float percent, glm::vec3 position){
+    glm::mat4 modelMatrix = glm::mat4(1.0f);
+    modelMatrix = glm::translate(modelMatrix, glm::vec3(position.x - 0.1,-6.5f,0.0f));
+    program->SetModelMatrix(modelMatrix);
+    
+    float vertices1[] = {-0.08,0,0.08,0,0.08,1.02,-0.08,0,0.08,1.02,-0.08,1.02};
+    float texCoords1[] = {0.0,1.0,1.0,1.0,1.0,0.0,0.0,1.0,1.0,0.0,0.0,0.0};
+
+    glVertexAttribPointer(program->positionAttribute, 2, GL_FLOAT, false, 0, vertices1);
+    glEnableVertexAttribArray(program->positionAttribute);
+    glVertexAttribPointer(program->texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords1);
+    glEnableVertexAttribArray(program->texCoordAttribute);
+
+    GLuint whiteBarTextureID = LoadTexture("whitebar.png");
+    glBindTexture(GL_TEXTURE_2D, whiteBarTextureID);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    
+    float top = 1.0;
+    if(top * percent < 0.02){
+        top = 0.02;
+    }else{
+        top *= percent;
+    }
+    
+    float vertices[] = {-0.05,0.02,0.05,0.02,0.05,top,-0.05,0.02,0.05,top,-0.05,top};
+    float texCoords[] = {0.0,1.0,1.0,1.0,1.0,0.0,0.0,1.0,1.0,0.0,0.0,0.0};
+    
+    glVertexAttribPointer(program->positionAttribute, 2, GL_FLOAT, false, 0, vertices);
+    glEnableVertexAttribArray(program->positionAttribute);
+    glVertexAttribPointer(program->texCoordAttribute, 2, GL_FLOAT, false, 0, texCoords);
+    glEnableVertexAttribArray(program->texCoordAttribute);
+    
+    GLuint redBarTextureID = LoadTexture("redbar.png");
+    glBindTexture(GL_TEXTURE_2D, redBarTextureID);
+    glDrawArrays(GL_TRIANGLES, 0, 6);
+    
+    glDisableVertexAttribArray(program->positionAttribute);
+    glDisableVertexAttribArray(program->texCoordAttribute);
+    
+    modelMatrix = glm::mat4(1.0f);
+    GLuint fontTexture = LoadTexture("font1.png");
+    DrawText(program, fontTexture, "Progress: ", 0.4, -0.25, glm::vec3(position.x - 1.5,-5.65f,0.0f));
+}

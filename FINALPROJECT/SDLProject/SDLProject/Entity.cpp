@@ -24,7 +24,7 @@ bool Entity::CheckCollision(Entity* other){
 void Entity::CheckCollisionsY(Entity* objects, int objectCount){
     for(int i = 0; i < objectCount; i++){
         Entity* object = &objects[i];
-        if(CheckCollision(object)){
+        if(CheckCollision(object) && this != object){
             float ydist = fabs(position.y - object->position.y);
             float penetrationY = fabs(ydist - (height / 2.0f) - (object->height / 2.0f));
             if(velocity.y > 0){
@@ -68,13 +68,13 @@ void Entity::CheckCollisionsY(Entity* objects, int objectCount){
     }
 }
 
-void Entity::CheckCollisionsX(Entity* objects, int objectCount){
+void Entity::CheckCollisionsX(Entity* objects, int objectCount, Entity* hp, int hpCount){
     for(int i = 0; i < objectCount; i++){
         Entity* object = &objects[i];
         if(CheckCollision(object)){
             float xdist = fabs(position.x - object->position.x);
             float penetrationX = fabs(xdist - (width / 2.0f) - (object->width / 2.0f));
-            if(velocity.x > 0){
+            if(velocity.x >= 0){
                 position.x -= penetrationX;
                 velocity.x = 0;
                 collidedRight = true;
@@ -83,6 +83,15 @@ void Entity::CheckCollisionsX(Entity* objects, int objectCount){
                     object->health -= dps;
                     if(object->health <= 0){
                         object->isActive = false;
+                        int x = rand() % 100;
+                        if(x < 10){
+                            for(int i = 0; i < hpCount; i++){
+                                if(!hp[i].isActive){
+                                    hp[i].position = this->position;
+                                    hp[i].isActive = true;
+                                }
+                            }
+                        }
                     }
                 }
                 if(entityType == PLAYER){
@@ -236,15 +245,23 @@ void Entity::AIWaitAndGO(Entity* player){
             }
             break;
         case WALKING:
-            if(player->position.x < position.x){
-                movement = glm::vec3(-1, 0, 0);
-            }else{
-                movement = glm::vec3(1, 0, 0);
+            if(player->position.x - position.x > 5){
+                movement.x -= 1;
+                acceleration.x = -150;
+                if(player->position.y < position.y){
+                    movement = glm::vec3(0, -0.5, 0);
+                }else{
+                    movement = glm::vec3(0, 0.5, 0);
+                }
             }
-            if(player->position.y < position.y){
-                movement = glm::vec3(0, -1, 0);
-            }else{
-                movement = glm::vec3(0, 1, 0);
+            else if(player->position.x - position.x <= 5){
+                movement.x -= 1;
+                acceleration.x = -250;
+                if(player->position.y < position.y){
+                    movement = glm::vec3(0, -1.5, 0);
+                }else{
+                    movement = glm::vec3(0, 1.5, 0);
+                }
             }
             break;
         case ATTACKING:
@@ -305,7 +322,7 @@ void Entity::turrentUpdate(Entity* player, Entity* turrentBullets){
     }
 }
 
-void Entity::Update(float deltaTime, Entity* player, Entity* objects, int objectCount, Map* map, float horizontalX, Entity* turrentBullets)
+void Entity::Update(float deltaTime, Entity* player, Entity* objects, int objectCount, Map* map, float horizontalX, Entity* turrentBullets, Entity* hp, int hpCount)
 {
     if(isActive == false) return;
     
@@ -316,6 +333,8 @@ void Entity::Update(float deltaTime, Entity* player, Entity* objects, int object
     
     if(entityType == ENEMY){
         AI(player);
+        CheckCollisionsY(objects, objectCount);
+//        CheckCollisionsX(objects, objectCount);
     }
     
     if (animIndices != NULL) {
@@ -341,17 +360,26 @@ void Entity::Update(float deltaTime, Entity* player, Entity* objects, int object
     }
     
     if(entityType == PLAYER){
-        CheckCollisionsX(objects, objectCount);
+        CheckCollisionsX(objects, objectCount, hp, hpCount);
         CheckCollisionsY(objects, objectCount);
     }
     
     if(entityType == PLAYERBULLET){
-        CheckCollisionsX(objects, objectCount);
+        CheckCollisionsX(objects, objectCount, hp, hpCount);
     }
     
     if(entityType == PLAYER && health <= 0){
         isActive = false;
-        std::cout << "you died" << std::endl;
+    }
+    
+    if(entityType == HP){
+        if(CheckCollision(player)){
+            player->health -= dps;
+            if(player->health >= 100){
+                player->health = 100;
+            }
+            isActive = false;
+        }
     }
     
     if(entityType == TURRENTBULLET){
